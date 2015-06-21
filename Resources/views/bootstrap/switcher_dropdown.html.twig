@@ -1,0 +1,23 @@
+<ul class="nav navbar-nav pull-right locale-switcher">
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" role="button">
+            {% if app.request.locale == 'ru' %}
+                <span></span> Русский
+            {% else %}
+                <span></span> English
+            {% endif %}
+        </a>
+        <ul class="dropdown-menu">
+            <li>
+                <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'ru'})) }}">
+                    Русский
+                </a>
+            </li>
+            <li>
+                <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'en'})) }}">
+                    English
+                </a>
+            </li>
+        </ul>
+    </li>
+</ul>

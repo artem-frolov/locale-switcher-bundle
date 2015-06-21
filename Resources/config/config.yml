@@ -1,0 +1,7 @@
+services:
+    artem_frolov.locale_switcher_bundle.twig.bootstrap_locale_switcher:
+        class: ArtemFrolov\Bundle\LocaleSwitcherBundle\Twig\BootstrapLocaleSwitcher
+        arguments:
+            - @service_container
+        tags:
+            - {name: twig.extension}

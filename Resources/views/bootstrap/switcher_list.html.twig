@@ -1,0 +1,15 @@
+<ul class="nav navbar-nav pull-right locale-switcher">
+    {% for code, name in languages %}
+        <li>
+            <p class="navbar-text">
+            {% if app.request.locale != code %}
+                <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': code})) }}">
+                    {{ name }}
+                </a>
+            {% else %}
+                <strong>{{ name }}</strong>
+            {% endif %}
+            </p>
+        </li>
+    {% endfor %}
+</ul>
