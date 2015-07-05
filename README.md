@@ -14,21 +14,17 @@ Update your project's `composer.json` file to include dependency.
 }
 ```
 
+Add the following to your config.yml:
+
+```
+parameters:
+    locale: en
+    enabled_locales: ru|en
+```
+
 ### Bundle
 
-
-
-
 ## Usage
-
-
-    "config": {
-        // ...
-        "component-dir": "web/assets"
-    },
-
-
-    <link href="{{ asset('bundles/artemfrolovlocaleswitcher/css/style.css') }}" rel="stylesheet">
             
 ## Tests
 

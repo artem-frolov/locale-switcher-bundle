@@ -51,7 +51,10 @@ class BootstrapLocaleSwitcher extends \Twig_Extension
     public function getDropdown()
     {
         return $this->container->get('templating')->render(
-            'ArtemFrolovLocaleSwitcherBundle:bootstrap:switcher_dropdown.html.twig'
+            'ArtemFrolovLocaleSwitcherBundle:bootstrap:switcher_dropdown.html.twig',
+            array(
+                'locales' => $this->getEnabledLocales()
+            )
         );
     }
 
@@ -60,15 +63,50 @@ class BootstrapLocaleSwitcher extends \Twig_Extension
      */
     public function getList()
     {
-        $languages = array(
-            'ru' => 'Русский',
-            'en' => 'English'
-        );
         return $this->container->get('templating')->render(
             'ArtemFrolovLocaleSwitcherBundle:bootstrap:switcher_list.html.twig',
             array(
-                'languages' => $languages
+                'locales' => $this->getEnabledLocales()
             )
+        );
+    }
+
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    private function getEnabledLocales()
+    {
+        $enabledLocaleCodes = explode(
+            '|',
+            $this->container->getParameter('enabled_locales')
+        );
+
+        $locales = array();
+        foreach ($enabledLocaleCodes as $code) {
+            $locales[$code] = array(
+                'nativeLocale' => $this->getLocaleName($code, $code),
+                'currentLocale' => $this->getLocaleName($code),
+            );
+        }
+        return $locales;
+    }
+
+    /**
+     * @param string $locale
+     * @param null $inLocale
+     *
+     * @return string
+     */
+    private function getLocaleName($locale, $inLocale = null)
+    {
+        return mb_convert_case(
+            // getDisplayName() returns the input string
+            // when the second parameter is passed even if it's null.
+            // call_user_func_array + func_get_args solve this issue
+            call_user_func_array('\Locale::getDisplayName', func_get_args()),
+            MB_CASE_TITLE,
+            'UTF-8'
         );
     }
 }

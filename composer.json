@@ -8,13 +8,12 @@
         "psr-4": { "ArtemFrolov\\Bundle\\LocaleSwitcherBundle\\": "" }
     },
     "require": {
-        "php": ">=5.3",
-        "components/flag-icon-css": "0.7.1"
+        "php": ">=5.3"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.0",
         "squizlabs/php_codesniffer": "~1.0",
         "phpmd/phpmd" : "~2.0",
-        "symfony/symfony": "~2.7"
+        "symfony/symfony": "~2.0"
     }
 }
