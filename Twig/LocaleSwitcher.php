@@ -1,6 +1,7 @@
 <?php
 namespace ArtemFrolov\Bundle\LocaleSwitcherBundle\Twig;
 
+use ArtemFrolov\Bundle\LocaleSwitcherBundle\Routing\Router;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -12,20 +13,20 @@ class LocaleSwitcher extends \Twig_Extension
     private $container;
 
     /**
-     * @var UrlGeneratorInterface
+     * @var Router
      */
-    private $generator;
+    private $router;
 
     /**
      * @param Container $container
-     * @param UrlGeneratorInterface $generator
+     * @param Router $router
      */
     public function __construct(
         Container $container,
-        UrlGeneratorInterface $generator
+        Router $router
     ) {
         $this->container = $container;
-        $this->generator = $generator;
+        $this->router = $router;
     }
 
     /**
@@ -67,7 +68,7 @@ class LocaleSwitcher extends \Twig_Extension
         return $this->container->get('templating')->render(
             'ArtemFrolovLocaleSwitcherBundle:bootstrap:switcher_dropdown.html.twig',
             array(
-                'locales' => $this->getEnabledLocales()
+                'locales' => $this->router->getEnabledLocales()
             )
         );
     }
@@ -80,7 +81,7 @@ class LocaleSwitcher extends \Twig_Extension
         return $this->container->get('templating')->render(
             'ArtemFrolovLocaleSwitcherBundle:bootstrap:switcher_list.html.twig',
             array(
-                'locales' => $this->getEnabledLocales()
+                'locales' => $this->router->getEnabledLocales()
             )
         );
     }
@@ -97,83 +98,12 @@ class LocaleSwitcher extends \Twig_Extension
         $parameters = array(),
         $relative = false
     ) {
-        $currentLocale = $this->generator->getContext()->getParameter('_locale');
-        if (isset($parameters['_locale'])) {
-            $targetLocale = $parameters['_locale'];
-            unset($parameters['_locale']);
-        } else {
-            $targetLocale = $currentLocale;
-        }
-        $this->generator->getContext()->setParameter('_locale', $targetLocale);
-
-        if ($this->container->hasParameter('custom_locale_routes')) {
-            $customLocaleRoutes = $this->container->getParameter('custom_locale_routes');
-
-            if (
-                isset($customLocaleRoutes[$name])
-                && isset($customLocaleRoutes[$name][$targetLocale])
-            ) {
-                $name = $customLocaleRoutes[$name][$targetLocale];
-            } else {
-                foreach ($customLocaleRoutes as $route => $locales) {
-                    if (
-                        isset($locales[$currentLocale])
-                        && $locales[$currentLocale] == $name
-                    ) {
-                        $name = $route;
-                        break;
-                    }
-                }
-            }
-        }
-
-        $result = $this->generator->generate(
+        return $this->router->generate(
             $name,
             $parameters,
             $relative
                 ? UrlGeneratorInterface::RELATIVE_PATH
                 : UrlGeneratorInterface::ABSOLUTE_PATH
-        );
-        $this->generator->getContext()->setParameter('_locale', $currentLocale);
-        return $result;
-    }
-
-    /**
-     * @return array
-     * @throws \Exception
-     */
-    private function getEnabledLocales()
-    {
-        $enabledLocaleCodes = explode(
-            '|',
-            $this->container->getParameter('enabled_locales')
-        );
-
-        $locales = array();
-        foreach ($enabledLocaleCodes as $code) {
-            $locales[$code] = array(
-                'nativeLocale' => $this->getLocaleName($code, $code),
-                'currentLocale' => $this->getLocaleName($code),
-            );
-        }
-        return $locales;
-    }
-
-    /**
-     * @param string $locale
-     * @param null $inLocale
-     *
-     * @return string
-     */
-    private function getLocaleName($locale, $inLocale = null)
-    {
-        return mb_convert_case(
-            // getDisplayName() returns the input string
-            // when the second parameter is passed even if it's null.
-            // call_user_func_array + func_get_args solve this issue
-            call_user_func_array('\Locale::getDisplayName', func_get_args()),
-            MB_CASE_TITLE,
-            'UTF-8'
         );
     }
 }
