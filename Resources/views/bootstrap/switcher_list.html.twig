@@ -3,7 +3,7 @@
         <li>
             <p class="navbar-text">
             {% if app.request.locale != code %}
-                <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': code})) }}" title="{{ names.currentLocale }}">
+                <a href="{{ path_locale(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': code})) }}" title="{{ names.currentLocale }}">
                     {{ names.nativeLocale }}
                 </a>
             {% else %}

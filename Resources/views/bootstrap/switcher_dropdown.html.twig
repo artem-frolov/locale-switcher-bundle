@@ -6,7 +6,7 @@
         <ul class="dropdown-menu">
             {% for code, names in locales if app.request.locale != code %}
                 <li>
-                    <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': code})) }}" title="{{ names.currentLocale }}">
+                    <a href="{{ path_locale(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': code})) }}" title="{{ names.currentLocale }}">
                         {{ names.nativeLocale }}
                     </a>
                 </li>

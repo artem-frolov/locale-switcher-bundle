@@ -53,8 +53,8 @@ class LocaleSwitcher extends \Twig_Extension
                 array('is_safe' => array('html'))
             ),
             new \Twig_SimpleFunction(
-                'path_per_locale',
-                array($this, 'getPathPerLocale')
+                'path_locale',
+                array($this, 'getPathLocale')
             )
         );
     }
@@ -87,29 +87,55 @@ class LocaleSwitcher extends \Twig_Extension
 
     /**
      * @param string $name
-     * @param array $namesPerLocale
      * @param array $parameters
      * @param bool $relative
      *
      * @return string
      */
-    public function getPathPerLocale(
+    public function getPathLocale(
         $name,
-        $namesPerLocale = array(),
         $parameters = array(),
         $relative = false
     ) {
         $currentLocale = $this->generator->getContext()->getParameter('_locale');
-        if (isset($namesPerLocale[$currentLocale])) {
-            $name = $namesPerLocale[$currentLocale];
+        if (isset($parameters['_locale'])) {
+            $targetLocale = $parameters['_locale'];
+            unset($parameters['_locale']);
+        } else {
+            $targetLocale = $currentLocale;
         }
-        return $this->generator->generate(
+        $this->generator->getContext()->setParameter('_locale', $targetLocale);
+
+        if ($this->container->hasParameter('custom_locale_routes')) {
+            $customLocaleRoutes = $this->container->getParameter('custom_locale_routes');
+
+            if (
+                isset($customLocaleRoutes[$name])
+                && isset($customLocaleRoutes[$name][$targetLocale])
+            ) {
+                $name = $customLocaleRoutes[$name][$targetLocale];
+            } else {
+                foreach ($customLocaleRoutes as $route => $locales) {
+                    if (
+                        isset($locales[$currentLocale])
+                        && $locales[$currentLocale] == $name
+                    ) {
+                        $name = $route;
+                        break;
+                    }
+                }
+            }
+        }
+
+        $result = $this->generator->generate(
             $name,
             $parameters,
             $relative
                 ? UrlGeneratorInterface::RELATIVE_PATH
                 : UrlGeneratorInterface::ABSOLUTE_PATH
         );
+        $this->generator->getContext()->setParameter('_locale', $currentLocale);
+        return $result;
     }
 
     /**
