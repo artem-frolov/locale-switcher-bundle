@@ -2,8 +2,9 @@
 namespace ArtemFrolov\Bundle\LocaleSwitcherBundle\Twig;
 
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class BootstrapLocaleSwitcher extends \Twig_Extension
+class LocaleSwitcher extends \Twig_Extension
 {
     /**
      * @var Container
@@ -11,11 +12,20 @@ class BootstrapLocaleSwitcher extends \Twig_Extension
     private $container;
 
     /**
-     * @param Container $container
+     * @var UrlGeneratorInterface
      */
-    public function __construct(Container $container)
-    {
+    private $generator;
+
+    /**
+     * @param Container $container
+     * @param UrlGeneratorInterface $generator
+     */
+    public function __construct(
+        Container $container,
+        UrlGeneratorInterface $generator
+    ) {
         $this->container = $container;
+        $this->generator = $generator;
     }
 
     /**
@@ -23,7 +33,7 @@ class BootstrapLocaleSwitcher extends \Twig_Extension
      */
     public function getName()
     {
-        return 'bootstrap_locale_switcher';
+        return 'locale_switcher';
     }
 
     /**
@@ -41,6 +51,10 @@ class BootstrapLocaleSwitcher extends \Twig_Extension
                 'bootstrap_locale_switcher_list',
                 array($this, 'getList'),
                 array('is_safe' => array('html'))
+            ),
+            new \Twig_SimpleFunction(
+                'path_per_locale',
+                array($this, 'getPathPerLocale')
             )
         );
     }
@@ -68,6 +82,33 @@ class BootstrapLocaleSwitcher extends \Twig_Extension
             array(
                 'locales' => $this->getEnabledLocales()
             )
+        );
+    }
+
+    /**
+     * @param string $name
+     * @param array $namesPerLocale
+     * @param array $parameters
+     * @param bool $relative
+     *
+     * @return string
+     */
+    public function getPathPerLocale(
+        $name,
+        $namesPerLocale = array(),
+        $parameters = array(),
+        $relative = false
+    ) {
+        $currentLocale = $this->generator->getContext()->getParameter('_locale');
+        if (isset($namesPerLocale[$currentLocale])) {
+            $name = $namesPerLocale[$currentLocale];
+        }
+        return $this->generator->generate(
+            $name,
+            $parameters,
+            $relative
+                ? UrlGeneratorInterface::RELATIVE_PATH
+                : UrlGeneratorInterface::ABSOLUTE_PATH
         );
     }
 
