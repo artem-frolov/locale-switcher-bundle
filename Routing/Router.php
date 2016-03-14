@@ -19,8 +19,7 @@ class Router
     public function __construct(
         Container $container,
         UrlGeneratorInterface $router
-    )
-    {
+    ) {
         $this->container = $container;
         $this->router = $router;
     }
