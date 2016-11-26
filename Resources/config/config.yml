@@ -2,19 +2,19 @@ services:
     artem_frolov.locale_switcher_bundle.routing.router:
         class: ArtemFrolov\Bundle\LocaleSwitcherBundle\Routing\Router
         arguments:
-            - @service_container
-            - @router
+            - '@service_container'
+            - '@router'
     artem_frolov.locale_switcher_bundle.twig.locale_switcher:
         class: ArtemFrolov\Bundle\LocaleSwitcherBundle\Twig\LocaleSwitcher
         arguments:
-            - @service_container
-            - @artem_frolov.locale_switcher_bundle.routing.router
+            - '@service_container'
+            - '@artem_frolov.locale_switcher_bundle.routing.router'
         tags:
             - {name: twig.extension}
     artem_frolov.locale_switcher_bundle.event_listener.custom_locale_routes_listener:
         class: ArtemFrolov\Bundle\LocaleSwitcherBundle\EventListener\CustomLocaleRoutesListener
         arguments:
-            - @artem_frolov.locale_switcher_bundle.routing.router
+            - '@artem_frolov.locale_switcher_bundle.routing.router'
         tags:
             -
                 name: kernel.event_listener
