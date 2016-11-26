@@ -1,12 +1,12 @@
-# Locale Switcher Bundle for Symfony 2
+# Locale Switcher Bundle for Symfony 2 / 3
 
 
 ## Installation
 
-### Composer
+### 1. Install Composer package
 
-Install bundle by using [Composer](https://getcomposer.org).
-Update your project's `composer.json` file to include dependency.
+You can install the bundle using [Composer](https://getcomposer.org),
+update your project's `composer.json` file to include the following dependency:
 
 ```json
 "require": {
@@ -14,20 +14,30 @@ Update your project's `composer.json` file to include dependency.
 }
 ```
 
-Add the following to your config.yml:
+### 2. Register the bundle
+
+Add the following line to `app/AppKernel.php`:
+
+```
+$bundles = array(
+    // ...
+    new ArtemFrolov\Bundle\LocaleSwitcherBundle\ArtemFrolovLocaleSwitcherBundle(),
+);
+```
+
+### 3. Configure
+
+Add the following parameters to your `config.yml`:
 
 ```
 parameters:
     locale: en
     enabled_locales: ru|en
+    custom_locale_routes:
+        index:
+            en: index_en
 ```
 
 ### Bundle
 
 ## Usage
-            
-## Tests
-
-Execute `vendor/bin/phpunit` to run tests on Linux/MacOS/etc.
-
-Execute `vendor\bin\phpunit` to run tests on Windows
